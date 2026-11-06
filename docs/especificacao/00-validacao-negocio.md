@@ -1,4 +1,4 @@
-# [NOME DO SISTEMA] — Documento de Validação e Especificação de Negócio
+# Sistema de Agendamento de Exames (SAE-HC) — Documento de Validação e Especificação de Negócio
 
 > **Padrão Oficial SETISD / HC-UFPE (HU Brasil) — Fase 0 (Alinhamento de Negócio)**  
 > **Público-alvo:** Profissionais das áreas envolvidas e Equipe de TI.  
@@ -10,11 +10,11 @@
 
 | Campo | Descrição |
 | :--- | :--- |
-| **Nome do Sistema** | [Ex: Sistema de Gestão de Escalas / Gerenciador de Leitos UTI] |
-| **Área Solicitante / Cliente** | [Gerência, Unidade ou Setor no HC-UFPE] |
-| **Instância Superior Competente** | [Gerência à qual a área proponente esteja subordinada ou Superintendência] |
-| **Líder Técnico (SETISD)** | [Analista de TI desiginado para prestar suporte técnico] |
-| **Objetivo Estratégico HU Brasil** | [Vincular o projeto aos objetivos do HU Brasil] |
+| **Nome do Sistema** | Sistema de Agendamento de Exames |
+| **Área Solicitante / Cliente** | Central de Marcação de Exames |
+| **Instância Superior Competente** | SETISD |
+| **Líder Técnico (SETISD)** | Tiago Ferrão |
+| **Objetivo Estratégico HU Brasil** | Garantir eficiência, rastreabilidade e padronização do processo de agendamento de exames no HC-UFPE |
 
 ---
 
@@ -23,7 +23,7 @@
 > **Objetivo:** Dizer com clareza qual é o problema real de trabalho. Sem rodeios: o que hoje está quebrado, ineficiente ou gerando risco para o hospital?
 
 * **A Dor Central:**  
-  [Resumo direto da dor em 1 ou 2 frases. *Ex: A consolidação de informações essenciais é feita de forma descentralizada e manual, gerando retrabalho constante, atrasos crônicos e risco de perda de dados.*]
+  O processo de agendamento de exames não garante a prioridade de atendimento dos pacientes e as informações coletadas dos pacientes possuem erros demasiados.
 
 * **Por que isso não pode continuar (Impactos Reais):**
   - **Sobrecarga de Trabalho:** As chefias e equipes perdem horas redigitando dados e conferindo manualmente tarefas que poderiam ser automáticas.
@@ -36,14 +36,16 @@
 
 > **Objetivo:** Mapear a realidade crua de como as equipes se viram no dia a dia para realizar essa tarefa hoje.
 
-* **Meios Utilizados Hoje:**  
-  [Descreva o que usam: papel impresso físico, anotações de prancheta, planilhas Excel locais no computador, trocas de e-mail ou mensagens de WhatsApp].
+* **Meios Utilizados Hoje:**
+  Recebimento das solicitações de marcação de exame: Forms da Microsoft
+  Armazenamento das solicitações de marcação de exame: Planilha Excel
+  Marcação definitiva dos Exames: Sistema AGHUX
+  Comunicação da equipe: Whatsapp
 
 * **A Rotina Prática de Trabalho:**
-  1. **Início:** Alguém cria uma planilha do zero, copia o arquivo do mês anterior ou imprime formulários em papel para distribuir.
-  2. **Preenchimento:** Os responsáveis anotam as informações à mão ou digitam em suas planilhas, muitas vezes tendo que redigitar nomes de profissionais e locais que já existem nos sistemas hospitalares (como o AGHU).
-  3. **Conferência:** As folhas impressas ou arquivos vão para a chefia, que confere linha por linha no papel (com caneta) ou em telas dispersas, assinando manualmente cada página.
-  4. **Entrega e Arquivo:** As pastas físicas são transportadas até a área responsável ou enviadas por e-mail, ficando guardadas em gavetas ou pastas de rede sem garantia de qual versão é a final.
+  Lançamento do formulário para marcação de exames -> Exportação das respostas para planilha do Excel -> 
+  Seleção dos pacientes manualmente para marcação -> Verificação dos dados preenchidos pelo paciente com os dados do AGHU -> 
+  Contato com paciente para verificar disponibilidade -> Marcação do exame no sistema AGHU.
 
 ---
 
@@ -51,13 +53,13 @@
 
 > **Objetivo:** Definir com clareza o que a solução digital deve trazer para eliminar a dor do processo atual.
 
-* **A Proposta de Valor:** [O que o sistema faz. *Ex: Centralizar todo o processo em um ambiente web simples, onde os dados já nascem integrados com as bases oficiais, o preenchimento é validado na hora e a tramitação ocorre com um clique.*]
+* **A Proposta de Valor:** Integrar o processo de validação dos dados preenchidos automaticamente e priorizar os pacientes seguindo critérios predefinidos, facilitando a inclusão no backbone.
 * **Ganhos Práticos Imediatos:**
-  - Fim do papel e das assinaturas manuais físicas.
-  - Alerta automático de erros ou inconsistências no momento da digitação.
+  - Alerta automático de erros ou inconsistências no lançamento do formulário.
   - Assinatura eletrônica segura com registro de quem fez, quando aprovou e o que alterou.
   - Painel de controle em tempo real para a gestão acompanhar entregas e pendências.
   - Histórico guardado, inviolável e fácil de consultar a qualquer momento.
+  - Redução no tempo necessário para validar os dados antes do lançamento.
 
 ---
 
@@ -65,22 +67,30 @@
 
 > **Objetivo:** Explicar em linguagem direta como o usuário vai interagir com o sistema, resolvendo a dor do processo manual de ponta a ponta.
 
-* **1. Os dados já vêm prontos:** O usuário não precisa mais recadastrar pessoas, setores ou cargos do zero. Ao abrir a tela, a lista oficial da sua equipe e local de trabalho já está carregada.
-* **2. Preenchimento rápido com travas contra erros:** O responsável digita ou seleciona as informações direto na tela. Se tentar lançar dados conflitantes (ex: duplicidade de horários ou campos obrigatórios em branco), o próprio sistema avisa antes de salvar.
-* **3. Aprovação com um clique:** Concluída a digitação, a chefia confere tudo em uma tela unificada e aprova eletronicamente. O sistema registra automaticamente quem aprovou, data e hora, travando contra alterações indevidas.
-* **4. Informação pronta e disponível:** A gestão acompanha em tempo real um painel mostrando quem já entregou e quem está pendente. A versão oficial homologada fica acessível para consulta imediata de quem tem direito, sem necessidade de procurar papéis ou cobrar por telefone.
+1. **Preenchimento e Validação Automática da Solicitação**:
+O paciente ou solicitante preenche e envia o formulário digital. Logo após o envio, o sistema processa automaticamente as informações recebidas e realiza a checagem dos dados, gerando alertas e sinalizando onde estão os erros, divergências ou campos incorretos para a equipe responsável.
+2. **Ordenação Automática da Fila por Prioridade**:
+A solicitação é inserida em uma fila centralizada e classificada automaticamente com base nos critérios de prioridade predefinidos pelo hospital (como urgência clínica ou idade), garantindo que os casos mais graves fiquem no topo do atendimento.
+3. **Conferência Unificada e Validação pelo Operador**:
+O profissional da Central de Marcação acessa a fila de trabalho unificada já priorizada. Ao abrir uma solicitação, o sistema destaca automaticamente eventuais divergências entre o que foi preenchido no formulário e os dados cadastrais do paciente no sistema AGHUX. O operador realiza os ajustes necessários diretamente na tela e valida os dados com poucos cliques. Cada ação, alteração ou aprovação fica vinculada à assinatura eletrônica do operador.
+4. **Confirmação e Agendamento com o Paciente**:
+Com os dados conferidos e livres de erros, o operador realiza a comunicação de confirmação da data e horário com o paciente, registrando o retorno no próprio sistema para evitar contatos duplicados.
+5. **Efetivação e Inclusão Facilitada no AGHUX**:
+Após o aceite do paciente, o operador confirma o agendamento no AGHUX. O sistema registra o histórico completo do processo (quem solicitou, quem validou, quais alterações foram feitas e quando a marcação foi concluída), gerando uma trilha auditável inviolável.
+6. **Acompanhamento e Gestão em Tempo Real**:
+A gestão acessa um painel de controle central para acompanhar os indicadores operacionais em tempo real: volume de solicitações pendentes, tempo médio de validação, exames agendados e gargalos da fila, dispensando o tempo gasto na consolidação de relatórios e conferências manuais.
 
 ---
 
 ## 6. Quem Participa do Processo (Atores: Como Faz Hoje vs. Como Fará no Sistema)
 
 | Ator / Perfil no Hospital | O que faz HOJE (Rotina Manual) | O que passará a fazer no NOVO SISTEMA | O que NÃO poderá fazer |
-| :--- | :--- | :--- | :--- |
-| **Área Gestora do Processo** *(Ex: Unidade de Pessoal, Farmácia Central, Regulação)* | Cobra prazos por telefone/e-mail, confere pilhas de papel ou junta dezenas de planilhas dispersas. | Habilita os períodos de trabalho, cadastra regras gerais, publica o resultado final e acompanha o painel geral de pendências em tempo real. | Não preenche dados rotineiros operacionais de setores individuais. |
-| **Profissional do Setor / Executante** *(Quem realiza o atendimento ou rotina na ponta)* | Preenche formulário impresso ou Excel local, correndo risco de esquecer dados ou duplicar lançamentos. | Lança os dados direto no sistema com validações em tempo real e encaminha a sua parte para conferência da chefia. | Não visualiza nem altera dados de setores que não sejam de sua alçada. |
-| **Chefia Imediata / Responsável pelo Setor** *(Ex: Chefia de Unidade ou Setor)* | Confere folhas rubricadas à mão na mesa física, assina no papel e leva as pastas fisicamente. | Visualiza em uma tela única o trabalho da sua equipe, faz ajustes rápidos e aprova eletronicamente com um clique. | Não pode enviar lotes parciais ou com pendências em aberto. |
-| **Gestão / Coordenação Superior** *(Ex: Chefia de Divisão ou Gerência* | Não tem visão em tempo real das entregas; depende de relatórios manuais solicitados e demorados. | Acompanha indicadores gerais em tempo real (painel executivo com taxas de cumprimento de prazos e pendências). | Acesso estritamente para visualização gerencial (não edita registros operacionais). |
-| **Público / Usuário do Serviço** *(Colaboradores do hospital, pacientes ou cidadãos)* | Precisa ligar, mandar e-mail ou ir presencialmente ao setor para obter uma informação ou comprovante. | Consulta com agilidade pelo portal, pesquisando por nome ou setor, com rapidez e transparência garantida. | Não tem acesso a dados restritos ou confidenciais. |
+| --- | --- | --- | --- |
+| **Área Gestora do Processo** *(Central de Marcação)* | Exporta dados do Microsoft Forms para planilhas Excel, tenta organizar prioridades manualmente e cobra pendências da equipe por WhatsApp. | Cadastra e atualiza as regras de priorização da fila, monitora o fluxo global e gerencia exceções do processo em tempo real. | Não poderá alterar a ordem da fila sem justificativa formal nem realizar agendamentos fora do fluxo auditável. |
+| **Profissional do Setor / Executante** *(Operador da Central de Marcação)* | Seleciona pacientes manualmente na planilha Excel, compara dados com o AGHUX campo a campo, contata paciente por WhatsApp e agenda no AGHUX. | Trabalha na fila priorizada, analisa os alertas de erro gerados pós-envio e divergências com o AGHUX, corrige/valida os dados com assinatura eletrônica e confirma a marcação. | Não poderá alterar manualmente a prioridade dos pacientes, ignorar os alertas de inconsistência ou editar dados sem registro de sua assinatura eletrônica. |
+| **Chefia Imediata / Responsável pelo Setor** *(Chefia da Central de Marcação)* | Revisa planilhas dispersas, trata erros e divergências reportados informalmente e tenta gerenciar a distribuição do trabalho sem visão do processo em tempo real. | Acompanha a produtividade da equipe e o andamento da fila em tela única, gerencia tratativas de cadastros divergentes e aprova solicitações excepcionais. | Não poderá aprovar agendamentos que permaneçam com erros ou pendências cadastrais em aberto. |
+| **Gestão / Coordenação Superior** *(Gerência de Atenção à Saúde / Superintendência)* | Depende de relatórios demorados consolidados manualmente em planilhas para acompanhar gargalos, volume de exames e tempo de espera. | Acompanha o painel executivo em tempo real com indicadores de volume, taxa de erro pós-envio, tempo médio de validação e gargalos operacionais. | Acesso estritamente para visualização gerencial e acompanhamento estratégico (não realiza edições ou agendamentos operacionais). |
+| **Público / Usuário do Serviço** *(Pacientes / Solicitantes do Exame)* | Preenche o Microsoft Forms, aguarda contato passivamente e precisa ligar ou ir ao hospital para obter informações. | Envia a solicitação de exame de forma estruturada pelo portal digital e consulta o status do agendamento com transparência. | Não terá acesso a informações de terceiros, dados confidenciais do hospital ou opções de alteração na fila de prioridade. |
 
 ---
 

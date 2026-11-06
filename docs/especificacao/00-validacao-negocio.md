@@ -67,8 +67,8 @@
 
 > **Objetivo:** Explicar em linguagem direta como o usuário vai interagir com o sistema, resolvendo a dor do processo manual de ponta a ponta.
 
-1. **Preenchimento e Validação Automática da Solicitação**:
-O paciente ou solicitante preenche e envia o formulário digital. Logo após o envio, o sistema processa automaticamente as informações recebidas e realiza a checagem dos dados, gerando alertas e sinalizando onde estão os erros, divergências ou campos incorretos para a equipe responsável.
+1. **Recebimento e Validação Automática da Solicitação**:
+O paciente ou solicitante preenche um formulário externo ao sistema. O sistema recebe os dados preenchidos, processa as informações e realiza a checagem, gerando alertas e sinalizando onde estão os erros, divergências ou campos incorretos para a equipe responsável. Havendo inconsistência, o paciente é notificado pelo meio de contato registrado para corrigir os dados.
 2. **Ordenação Automática da Fila por Prioridade**:
 A solicitação é inserida em uma fila centralizada e classificada automaticamente com base nos critérios de prioridade predefinidos pelo hospital (como urgência clínica ou idade), garantindo que os casos mais graves fiquem no topo do atendimento.
 3. **Conferência Unificada e Validação pelo Operador**:
@@ -90,27 +90,31 @@ A gestão acessa um painel de controle central para acompanhar os indicadores op
 | **Profissional do Setor / Executante** *(Operador da Central de Marcação)* | Seleciona pacientes manualmente na planilha Excel, compara dados com o AGHUX campo a campo, contata paciente por WhatsApp e agenda no AGHUX. | Trabalha na fila priorizada, analisa os alertas de erro gerados pós-envio e divergências com o AGHUX, corrige/valida os dados com assinatura eletrônica e confirma a marcação. | Não poderá alterar manualmente a prioridade dos pacientes, ignorar os alertas de inconsistência ou editar dados sem registro de sua assinatura eletrônica. |
 | **Chefia Imediata / Responsável pelo Setor** *(Chefia da Central de Marcação)* | Revisa planilhas dispersas, trata erros e divergências reportados informalmente e tenta gerenciar a distribuição do trabalho sem visão do processo em tempo real. | Acompanha a produtividade da equipe e o andamento da fila em tela única, gerencia tratativas de cadastros divergentes e aprova solicitações excepcionais. | Não poderá aprovar agendamentos que permaneçam com erros ou pendências cadastrais em aberto. |
 | **Gestão / Coordenação Superior** *(Gerência de Atenção à Saúde / Superintendência)* | Depende de relatórios demorados consolidados manualmente em planilhas para acompanhar gargalos, volume de exames e tempo de espera. | Acompanha o painel executivo em tempo real com indicadores de volume, taxa de erro pós-envio, tempo médio de validação e gargalos operacionais. | Acesso estritamente para visualização gerencial e acompanhamento estratégico (não realiza edições ou agendamentos operacionais). |
-| **Público / Usuário do Serviço** *(Pacientes / Solicitantes do Exame)* | Preenche o Microsoft Forms, aguarda contato passivamente e precisa ligar ou ir ao hospital para obter informações. | Envia a solicitação de exame de forma estruturada pelo portal digital e consulta o status do agendamento com transparência. | Não terá acesso a informações de terceiros, dados confidenciais do hospital ou opções de alteração na fila de prioridade. |
+| **Público / Usuário do Serviço** *(Pacientes / Solicitantes do Exame)* | Preenche o Microsoft Forms, aguarda contato passivamente e precisa ligar ou ir ao hospital para obter informações. | Preenche o formulário externo, é notificado pelo meio de contato registrado em caso de inconsistência nos dados e é contatado pelo operador para confirmar data e horário do exame. | Não terá acesso ao sistema, a informações de terceiros nem a opções de alteração na fila de prioridade. |
 
 ---
 
 ## 7. Regras de Negócio Inegociáveis (RNs)
 
-* **RN-01 (Identificação Funcional Única):** O profissional é identificado exclusivamente pela sua matrícula funcional (SIAPE). Para preservar a privacidade e evitar riscos de vazamento, dados pessoais sensíveis desnecessários (como CPF) não são coletados nem expostos no sistema.
-* **RN-02 (Prevenção de Duplicidade e Choques):** O sistema impede e bloqueia que a mesma pessoa seja alocada em dois setores, turnos ou atendimentos conflitantes no mesmo horário, eliminando de raiz o risco das planilhas paralelas manuais.
-* **RN-03 (Preservação e Imutabilidade do Histórico):** O fechamento de um período ou a abertura de um novo ciclo nunca apaga, altera ou sobrescreve informações passadas. Registros homologados tornam-se imutáveis para garantir respaldo em auditorias e consultas futuras.
-* **RN-04 (Homologação em Bloco / Entrega Completa):** A chefia de unidade só pode homologar e encaminhar para a gestão central o lote 100% completo de todos os seus setores subordinados. O sistema bloqueia entregas parciais ou com pendências não resolvidas.
-* **RN-05 (Autenticação Institucional Obrigatória):** O acesso interno para preenchimento, conferência e aprovação exige login institucional com a conta de rede do hospital, vinculando a autoria e data/hora de cada ação realizada.
-* **RN-06 (Transparência Ativa com Privacidade):** Na consulta pública ou da equipe, o sistema exibe apenas o nome completo, identificação funcional e a informação oficial aprovada, garantindo publicidade dos atos administrativos em conformidade com as diretrizes de privacidade.
+* **RN-01 (Identificação Única do Paciente):** Cada solicitação é vinculada ao paciente pelo CNS ou CPF, validado após o recebimento dos dados. Os dados do paciente são usados apenas para o agendamento e nunca são exibidos a terceiros.
+* **RN-02 (Priorização Automática e Equitativa):** Toda solicitação entra em uma fila única e é classificada automaticamente pelos critérios de prioridade definidos pelo hospital. Nenhum operador pode alterar a prioridade manualmente.
+* **RN-03 (Alteração de Fila Somente com Justificativa):** A ordem da fila só pode ser modificada pela Área Gestora, com justificativa formal registrada. Agendamentos fora do fluxo auditável são proibidos.
+* **RN-04 (Conferência Obrigatória com o AGHUX):** Antes de qualquer agendamento, os dados do formulário são comparados com o cadastro do AGHUX. O operador não pode ignorar divergências: cada uma deve ser corrigida ou justificada.
+* **RN-05 (Prevenção de Duplicidade e Choques):** O sistema bloqueia solicitações duplicadas do mesmo paciente para o mesmo exame e impede dois agendamentos conflitantes no mesmo horário para o mesmo paciente.
+* **RN-06 (Autenticação Institucional e Assinatura Eletrônica):** O acesso interno exige login institucional com a conta de rede do hospital. Toda ação (correção, validação, agendamento) é vinculada à assinatura eletrônica do operador, com data e hora.
+* **RN-07 (Confirmação com o Paciente antes da Efetivação):** O exame só é marcado no AGHUX após o aceite do paciente. O retorno do contato (aceite, recusa ou sem resposta) é registrado no sistema para evitar contatos duplicados.
+* **RN-08 (Preservação e Imutabilidade do Histórico):** Nenhum registro é apagado ou sobrescrito. Todo o histórico (quem solicitou, validou, alterou e agendou, e quando) forma uma trilha auditável inviolável.
 
 ---
 
 ## 8. Painel de Gestão e Indicadores Estratégicos (KPIs)
 
-O sistema deve disponibilizar painel gerencial hierárquico (cada chefia enxerga o seu escopo) com os seguintes indicadores de negócio:
-1. **Taxa de Cumprimento de Prazos:** Acompanhamento percentual e quantitativo em tempo real de quais setores e unidades já concluíram suas entregas dentro do calendário oficial, eliminando a necessidade de cobranças manuais por telefone.
-2. **Mapa de Pendências e Atrasos:** Listagem imediata de unidades ou setores que ainda estão com preenchimento aberto, rascunho pendente ou com prazo vencido, permitindo atuação pontual da liderança.
-3. **Detecção de Inconsistências:** Alerta visual automático para profissionais ativos que não possuem alocação ou registro no ciclo vigente, evitando esquecimentos ou desvios de planejamento.
+O sistema deve disponibilizar painel gerencial em tempo real, com os seguintes indicadores de negócio:
+1. **Volume de Solicitações Pendentes:** Quantidade de solicitações aguardando validação, contato ou agendamento, separadas por tipo de exame e faixa de prioridade.
+2. **Tempo Médio de Validação:** Tempo entre o envio do formulário pelo paciente e a conclusão da validação pelo operador.
+3. **Exames Agendados:** Quantidade de exames efetivamente marcados no período, com o tempo total entre solicitação e agendamento.
+4. **Gargalos da Fila:** Identificação das etapas e dos tipos de exame onde as solicitações ficam paradas por mais tempo.
+5. **Taxa de Erro Pós-Envio:** Percentual de formulários com inconsistências ou divergências em relação ao AGHUX, para orientar melhorias no preenchimento.
 
 ---
 
@@ -120,9 +124,12 @@ O sistema deve disponibilizar painel gerencial hierárquico (cada chefia enxerga
 
 | # | Ponto a Decidir | Impacto no Processo | Quem deve decidir? | Status / Definição |
 | :-: | :--- | :--- | :--- | :--- |
-| **1** | **Data Limite Oficial:** Até qual dia do período os setores devem fechar o preenchimento e assinar? | Define a regra do sistema para disparar alertas preventivos e travar edições intempestivas. | Gestão Central / Chefias | 🟡 Em definição |
-| **2** | **Substituição de Chefia:** Qual o critério para assinatura quando a chefia titular estiver de férias ou afastada? | Evita o travamento da homologação em bloco da unidade inteira por ausência de um único responsável. | Gestão da Área | 🟡 Em definição |
-| **3** | **Retificação pós-Homologação:** Qual é o rito formal para reabrir e corrigir dados já aprovados oficialmente? | Define se haverá solicitação formal de reabertura com justificativa gravada ou ajuste restrito à gestão central. | Gestão Central | 🟡 Em definição |
+| **1** | **Critérios de Priorização:** Quais critérios (urgência clínica, idade, tempo de espera, outros) e qual o peso de cada um? | Define a ordem automática da fila e a equidade no atendimento. | Gestão da Área / Direção Clínica | 🟡 Em definição |
+| **2** | **Política de Preenchimento de Vagas:** Como as vagas disponíveis serão distribuídas entre as solicitações da fila? | Evita vagas ociosas e garante que os casos prioritários sejam atendidos primeiro. | Gestão da Área | 🟡 Em definição |
+| **3** | **Prazo Máximo de Validação:** Qual o tempo-limite para o operador validar uma solicitação? | Define os alertas de atraso e a meta do indicador de tempo médio de validação. | Gestão Central / Chefias | 🟡 Em definição |
+| **4** | **Regra de Contato com o Paciente:** Qual o canal oficial, quantas tentativas e qual o prazo de resposta antes de devolver a solicitação à fila? | Evita contatos duplicados e vagas bloqueadas por pacientes sem retorno. | Gestão da Área | 🟡 Em definição |
+| **5** | **Alteração Excepcional de Prioridade:** Quais situações permitem à Área Gestora mudar a ordem da fila e qual a justificativa mínima? | Mantém a equidade sem impedir o tratamento de exceções reais. | Gestão Central | 🟡 Em definição |
+| **6** | **Cancelamento e Reagendamento:** Qual o rito formal para desmarcar ou remarcar um exame já efetivado? | Define o registro no histórico e o retorno da vaga à fila. | Gestão Central | 🟡 Em definição |
 
 ---
 ---

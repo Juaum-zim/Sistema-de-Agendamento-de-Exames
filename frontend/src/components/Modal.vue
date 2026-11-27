@@ -15,13 +15,14 @@
         v-if="show" 
         class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
       >
-        <div 
-          class="bg-white rounded-2xl shadow-2xl w-full overflow-hidden transform transition-all"
+        <!-- max-h-full + flex-col: o painel nunca passa da altura da tela; só o corpo rola -->
+        <div
+          class="bg-white rounded-2xl shadow-2xl w-full max-h-full flex flex-col overflow-hidden transform transition-all"
           :class="classeLargura"
           @click.stop
         >
           <!-- Header -->
-          <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+          <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 shrink-0">
             <h2 class="text-xl font-bold text-gray-800">
               <slot name="header">Título do Modal</slot>
             </h2>
@@ -34,12 +35,12 @@
           </div>
 
           <!-- Body -->
-          <div class="px-6 py-6 text-gray-600 leading-relaxed">
+          <div class="px-6 py-6 text-gray-600 leading-relaxed min-h-0 overflow-y-auto">
             <slot></slot>
           </div>
 
           <!-- Footer -->
-          <div v-if="$slots.footer" class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end space-x-3">
+          <div v-if="$slots.footer" class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end space-x-3 shrink-0">
             <slot name="footer"></slot>
           </div>
         </div>

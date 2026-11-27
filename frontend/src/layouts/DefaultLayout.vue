@@ -105,9 +105,7 @@ import { computed, ref, watch, type Component } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   HomeIcon,
-  CubeIcon,
   DocumentTextIcon,
-  Cog6ToothIcon,
   ChartBarIcon,
   TableCellsIcon,
   AdjustmentsHorizontalIcon,
@@ -168,9 +166,9 @@ const grupos: GrupoMenu[] = [
     titulo: 'Sistema',
     itens: [
       { rota: '/', nome: 'Início', icone: HomeIcon, perfis: PERFIS },
-      { rota: '/configuracoes', nome: 'Configurações', icone: Cog6ToothIcon, perfis: PERFIS },
       { rota: '/integracoes', nome: 'Integrações', icone: ArrowPathIcon, perfis: ['AREA_GESTORA', 'ADMIN_TI'] },
-      { rota: '/componentes', nome: 'Componentes', icone: CubeIcon, perfis: PERFIS },
+      // "Configurações" e "Componentes" são telas-modelo do framework e saíram do menu;
+      // as rotas continuam disponíveis pelo endereço para quem desenvolve.
     ],
   },
 ];

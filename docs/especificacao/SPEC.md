@@ -36,15 +36,14 @@ Os contratos HTTP implantados estão em `05-interfaces.md`; os demais contratos 
 - Manter os interceptadores de `frontend/src/services/api.ts` e os componentes reutilizáveis do framework.
 - Proteger toda rota de dados com `Depends(auth_handler.decode_token)` no roteador; a única exceção pública é `POST /api/integracoes/forms/webhook`, protegida por HMAC-SHA256, timestamp e nonce. No frontend, declarar `meta.roles` e tratar a autorização no backend como fonte de verdade, inclusive nas rotas administrativas de vagas e nas mutações de agendamento.
 - Registrar mudanças de critérios, perfis e solicitações via `registrar_auditoria()` com `dados_anteriores`, `dados_novos`, `ip_origem` e categoria.
-- Executar o auditor de conformidade ao final de cada entrega. O script `audit_framework.py` possui um defeito conhecido na função `colorize()` (`ENDC` não qualificado) que **não deve ser corrigido nesta entrega**; executá-lo por shim em memória:
-  `python -c "import audit_framework as a; a.ENDC=''; a.FrameworkAuditor('.').run()"`
+- Executar o auditor de conformidade ao final de cada entrega com `python audit_framework.py .`. O defeito da função `colorize()` (`ENDC` não qualificado) foi corrigido na integração dos PRs #1/#2 (TASK-060); o shim em memória permanece apenas como alternativa para branches anteriores.
 
 **A IA NÃO DEVE:**
 - Criar dependências externas não documentadas em `06-arquitetura.md`. Na v0.6.0 as **únicas dependências npm autorizadas** continuam sendo os cinco pacotes FullCalendar v6 (`core`, `vue3`, `daygrid`, `timegrid`, `interaction`); nenhum pacote premium ou outra biblioteca de calendário é permitida. O backend **não adiciona pacote**: `httpx>=0.27` já faz parte do projeto. Gráficos do painel seguem em SVG/CSS.
 - Implementar exclusão física de registros (usar `deleted_at`).
 - Burlar o sistema RBAC; esconder controles no frontend nunca substitui a validação no backend.
 - Alterar manualmente a prioridade individual de solicitações na tela do operador (RN-02); exceções são exclusivas da Área Gestora e exigem justificativa (RN-03).
-- Corrigir `audit_framework.py`, `src/main.py` ou demais arquivos de infraestrutura sem instrução explícita neste `SPEC.md`.
+- Corrigir `audit_framework.py`, `src/main.py` ou demais arquivos de infraestrutura sem instrução explícita neste `SPEC.md` (a correção do auditor está registrada na TASK-060).
 - Prometer recursos não implementados: agendamento real no AGHU, provider `FORMS_API` funcional ou tag de produção. `FORMS_API` e `AGHU` são apenas pontos de extensão reservados; a v0.6.0 registra reservas, confirmações e configuração de vagas operacionais no banco local e não envia marcação ao AGHUX.
 - Expor endereço completo do paciente (CEP, logradouro, número, complemento, bairro) em resposta, auditoria ou log, ou inventar coordenadas/distância quando o provedor de geocoding falhar.
 
@@ -118,10 +117,13 @@ Os contratos HTTP implantados estão em `05-interfaces.md`; os demais contratos 
 - [x] [TASK-058] Corrigir modais maiores que a tela (ex.: gestão de vagas): `Modal.vue` limita o painel à altura da janela, mantém cabeçalho e rodapé fixos e faz só o corpo rolar.
 - [x] [TASK-059] Remover do menu lateral os itens "Configurações" e "Componentes", telas-modelo do framework; as rotas `/configuracoes` e `/componentes` continuam acessíveis pelo endereço para desenvolvimento.
 
+### Fase 9 — Integração dos PRs #1 e #2
+- [x] [TASK-060] Integrar os PRs #1 e #2: agendamento de solicitações `RECEBIDA` sem aceite prévio, modais e menu, agrupamento de vagas no mês, filtros de unidade/exame nos agendamentos, vagas mock por par unidade/exame, contadores da simulação (`semAceite`, `comDivergencia`, `jaReservadas`), fuso do gestor de vagas e correção do `audit_framework.py`; validar com 62 testes, `npm run build` e auditoria 11/11.
+
 ## 5. Critérios de Verificação Global
 - [x] `npm run build` conclui sem erros de tipo (`vue-tsc`) para o frontend.
-- [x] Auditoria arquitetural: 11/11 (100%, EXCELENTE) com o comando via shim da Seção 3.
-- [x] `uv run pytest` sem regressões: **55 testes aprovados**, cobrindo HMAC válido/inválido, skew, replay, idempotência, RBAC, reprocessamento, alerta sem correspondência no AGHUX, cripto, capacidade, conflito do mesmo paciente, transições de contato, simulação de propostas distribuída e ordenada por prioridade, confirmação/não confirmação, movimento de proposta com validação de vaga/exame/RBAC, edição em lote de status com RBAC, justificativa única e auditoria por item, simulação com múltiplos exames por solicitação e campo `deFora` para vagas insuficientes, remarcação/cancelamento com devolução de vaga, sugestão com exame específico, criação/edição/remoção de vagas pela Chefia, cópia semanal idempotente, geração reproduzível do cenário recente, cards de proposta com drag-and-drop, busca sem PHI e não exposição de endereço.
+- [x] Auditoria arquitetural: 11/11 (100%, EXCELENTE) com `python audit_framework.py .`.
+- [x] `uv run pytest` sem regressões: **62 testes aprovados**, cobrindo HMAC válido/inválido, skew, replay, idempotência, RBAC, reprocessamento, alerta sem correspondência no AGHUX, cripto, capacidade, conflito do mesmo paciente, transições de contato, simulação de propostas distribuída e ordenada por prioridade, confirmação/não confirmação, movimento de proposta com validação de vaga/exame/RBAC, edição em lote de status com RBAC, justificativa única e auditoria por item, simulação com múltiplos exames por solicitação e campo `deFora` para vagas insuficientes, remarcação/cancelamento com devolução de vaga, sugestão com exame específico, criação/edição/remoção de vagas pela Chefia, cópia semanal idempotente, geração reproduzível do cenário recente, cards de proposta com drag-and-drop, busca sem PHI e não exposição de endereço.
 - [x] Nenhuma mutação de tela sem registro correspondente no histórico simulado; as mutações da integração e da agenda são gravadas em `audit_logs` com estado anterior/posterior, IP de origem e categoria (`NEGOCIO_CLINICO` para agendamentos e propostas, `CONFIGURACAO` para vagas).
 - [x] Nenhum CPF/CNS inventado nos mocks ou nos provedores: o export AGHUX não contém esses campos e um formulário sem CPF/CNS não inventa valores; quando informados, são criptografados com AES-GCM, com hash HMAC para deduplicação e máscara `***` nos últimos 4 dígitos, nunca em claro em payload, auditoria, logs ou respostas da API. O mesmo vale para o endereço do formulário, cifrado em `paciente_enderecos` e nunca devolvido pela API.
 - [x] Dependências explicitamente autorizadas e documentadas em `06-arquitetura.md`: `cryptography>=41` no backend e os cinco pacotes FullCalendar v6 no frontend. Nenhuma outra dependência foi adicionada; `httpx>=0.27` já estava no projeto.

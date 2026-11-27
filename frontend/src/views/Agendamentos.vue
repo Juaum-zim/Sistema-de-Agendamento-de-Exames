@@ -61,6 +61,11 @@
         </div>
       </div>
 
+      <p class="mt-3 text-xs text-gray-500">
+        No modo mês as vagas são agrupadas por dia. Selecione uma unidade ou um tipo de exame
+        para ver os horários individuais na visão semanal.
+      </p>
+
       <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3">
         <div class="flex flex-wrap items-center gap-2">
           <input
@@ -111,6 +116,7 @@
               :agendamentos="store.agendamentos"
               :propostas="store.propostas"
               :readonly="!store.podeEditar"
+              :detalhar-vagas="Boolean(store.filtros.unidade || store.filtros.codigoExame)"
               @periodo-alterado="store.definirPeriodo"
               @dia-selecionado="abrirDia"
               @slot-selecionado="store.selecionarSlot"
@@ -277,7 +283,8 @@ const pacienteSelecionado = computed(() =>
   store.pacientes.find((item) => item.pacienteChave === store.pacienteChave));
 
 onMounted(() => {
-  void store.carregar();
+  // O primeiro carregamento é disparado pelo `datesSet` do FullCalendar, que já
+  // informa o período visível. Evita duas requisições concorrentes na abertura.
   const solicitacaoId = typeof route.query.solicitacao === 'string' ? route.query.solicitacao : '';
   const termo = typeof route.query.busca === 'string' ? route.query.busca : '';
   if (solicitacaoId) {
@@ -318,7 +325,15 @@ async function gerarPropostas(): Promise<void> {
   if (resultado) {
     toast.success(`${resultado.geradas} proposta(s) gerada(s) para ${resultado.dias} dias.`);
     if (resultado.deFora > 0) {
-      toast.warning(`${resultado.deFora} solicitação(ões) não couberam nas vagas disponíveis.`);
+      toast.warning(`${resultado.deFora} exame(s) não couberam nas vagas disponíveis.`);
+    }
+    const excluidas = [
+      resultado.semAceite ? `${resultado.semAceite} sem aceite` : '',
+      resultado.comDivergencia ? `${resultado.comDivergencia} com divergência` : '',
+      resultado.jaReservadas ? `${resultado.jaReservadas} já reservada(s)` : '',
+    ].filter(Boolean);
+    if (excluidas.length > 0) {
+      toast.info(`Fora da simulação: ${excluidas.join(' · ')}.`);
     }
   } else {
     toast.error(store.erro || 'Não foi possível simular a agenda.');
